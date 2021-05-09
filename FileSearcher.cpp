@@ -44,18 +44,18 @@ int main(int argc, char *argv[])
 
 list<SPEC_FILE> readDir(DIR *pdir, bool followSym)
 {
-    long long count = 0;
+    long long       count = 0;
+    struct dirent  *pent  = nullptr;
     list<SPEC_FILE> filesList;
-    list<DIR *> dirParents;
+    list<DIR *>     dirParents;
 
     dirParents.push_front(pdir);
 
-    struct dirent *pent = nullptr;
     // While there is something to read from pdir
     while(dirParents.size() > 0)
     {
         pent = readdir(dirParents.front());
-        cout << endl << count++ << endl;
+        
         if(pent == nullptr)
         {
             dirParents.pop_front();
@@ -71,27 +71,21 @@ list<SPEC_FILE> readDir(DIR *pdir, bool followSym)
         {
             // Type is a Directory
             case DT_DIR:
-                // Convert pent to DIR and call openDir
-                //chdir(pent->d_name);
+                // Follow the sub-directory
                 dirParents.push_front(opendir(pent->d_name));
-
-                //for( SPEC_FILE s : readDir(opendir("."), followSym))
-                //    filesList.push_back(s);
-                //chdir("..");
                 break;
             // Type is a Sym Link
             case DT_LNK:
+                // Only follow the link if requested
                 if(followSym)
                 {
-                    // Follow the link
+                    dirParents.push_front(opendir(pent->d_name));
                     break;
                 }
-                // Else fall through
+            // Assumed to be a typical file
             default:
                 char *pathBuffer = getcwd(NULL, 0);
                 SPEC_FILE f(pent->d_name, pent->d_ino, pathBuffer);
-                cout << f.name << " with size of " << f.size << " found at " << f.path << endl;
-
                 filesList.push_back(f);
                 break;
         }        

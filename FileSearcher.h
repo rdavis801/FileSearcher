@@ -16,8 +16,8 @@ enum result
 struct SPEC_FILE
 {
     char *name;
-    char *path;
     ino_t size;
+    char *path;
 
     SPEC_FILE(char *pName, ino_t pSize, char *pPath = nullptr)
     {
