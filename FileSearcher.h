@@ -1,16 +1,17 @@
 #include <string>
 #include <list>
+#include <vector>
 #include <dirent.h>
 
 using namespace std;
 
 enum result
 {
-    NO_ARGS,
-    FILES,
+    FILES = 0,
     FOLDERS,
-    FILES_FOLDERS,
-    SYMLINK
+    SYMLINK,
+    FOLLOW_HIDDEN,
+    RESULTS_END
 };
 
 struct SPEC_FILE
@@ -28,4 +29,5 @@ struct SPEC_FILE
 };
 
 list<SPEC_FILE> readDir(DIR *pdir, bool followSym = false);
-list<SPEC_FILE> getLocation(int, char *[]);
+
+vector<string*> *readArgs(int argc, char *argv[]);
